@@ -1,10 +1,13 @@
 package com.example.projet_01.exo
 
+import kotlin.math.abs
+
 fun main() {
     exo1("COUCOU", 239, Pair(5, 19) )
-    val maman = UserEntity("AGabrielle", 46)
-    val papa = UserEntity("Fabien", 42)
-    exo2(papa, maman)
+    val user1 = UserEntity("Fabien", 42)
+    val user2 = UserEntity("Gabrielle", 46)
+    val user3 = UserEntity("Axel", 23)
+    exo2(user1, user2, user3)
 }
 
 fun exo1(text:String, minutes:Int, pair:Pair<Int, Int>){
@@ -41,7 +44,7 @@ fun exo1(text:String, minutes:Int, pair:Pair<Int, Int>){
     minToMinHour2 = null
 }
 
-fun exo2(papa: UserEntity, maman: UserEntity) {
+fun exo2(user1: UserEntity, user2: UserEntity, user3: UserEntity) {
 
     val compareUsersByName :(UserEntity, UserEntity)->UserEntity =
         { u1, u2 ->  if( u1.name.lowercase() <= u2.name.lowercase()) u1 else u2 }
@@ -49,9 +52,20 @@ fun exo2(papa: UserEntity, maman: UserEntity) {
     val compareUsersByOld :(UserEntity, UserEntity)->UserEntity =
         {u1, u2 -> if( u1.old >= u2.old ) u1 else u2}
 
-    println("ordre alpha : " + compareUsersByName(papa, maman))
-    println("le + vieux est : " + compareUsersByOld(papa, maman))
+    val near30 :(UserEntity, UserEntity)->UserEntity =
+        {u1, u2 -> if( abs(u1.old-30) <= abs(u2.old-30) ) u1 else u2}
+
+    println("ordre alpha : " + compareUsersByName(user1, user2))
+    println("le + vieux est : " + compareUsersByOld(user1, user2))
+    println("compareUsers par age : " + compareUsers(user1, user2, user3, compareUsersByOld))
+    println("compareUsers par nom : " + compareUsers(user1, user2, user3, compareUsersByName))
+    println("Le + proche de 30 ans : " + compareUsers(user1, user2, user3, near30))
 }
+
+fun compareUsers(u1 : UserEntity, u2  :UserEntity, u3 : UserEntity, comparator : (UserEntity, UserEntity)->UserEntity ) : UserEntity {
+   return comparator(u3, comparator(u1, u2))
+}
+
 
 data class UserEntity(
     val name: String,
