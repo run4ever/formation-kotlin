@@ -111,8 +111,8 @@ data class WeatherEntity(
     val id: Int,
     val name: String,
     val weather: List<Weather>,
-    val wind: Wind,
-    val main: Main,
+    val wind: WindEntity,
+    val main: TempEntity,
 ){
     fun getResume():String = """
         Il fait ${main.temp}°C à ${name} (id=${id}) avec un vent de ${wind.speed} m/s
@@ -123,18 +123,16 @@ data class WeatherEntity(
 
 @Serializable
 data class Weather(
-    val id: Int,
-    val main: String,
     val description: String,
     var icon: String,
 )
 
 @Serializable
-data class Main(
+data class TempEntity(
     val temp: Double,
 )
 
 @Serializable
-data class Wind(
+data class WindEntity(
     val speed: Double,
 )

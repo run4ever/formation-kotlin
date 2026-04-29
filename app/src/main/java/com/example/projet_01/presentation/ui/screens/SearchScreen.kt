@@ -13,10 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.projet_01.presentation.ui.theme.Projet_01Theme
+import com.example.projet_01.presentation.viewmodel.MainViewModel
 
 @Composable
-fun SearchScreen(modifier:Modifier = Modifier) {
+fun SearchScreen(modifier:Modifier = Modifier, model: MainViewModel = MainViewModel()) {
     Column(modifier= modifier) {
         println("SearchScreen()")
         Text(text = "Text1",fontSize = 20.sp)
@@ -28,6 +30,7 @@ fun SearchScreen(modifier:Modifier = Modifier) {
         PictureRowItem(content = "Hello from PictureRowItem", color = Color.Blue)
         PictureRowItem(content = "Hello from 2", color = Color.Red)
         PictureRowItem(content = "Hello from 33", color = Color.Green)
+        model.dataList.collectAsStateWithLifecycle().value.forEach { PictureRowItem(content = "Météo ${it.name}") }
     }
 }
 
@@ -44,6 +47,6 @@ fun SearchScreenPreview() {
 }
 
 @Composable
-fun PictureRowItem(modifier:Modifier = Modifier, content:String, color: Color) {
+fun PictureRowItem(modifier:Modifier = Modifier, content:String, color: Color = Color.Black) {
     Text(text = content, fontSize = 20.sp, color = color)
 }
