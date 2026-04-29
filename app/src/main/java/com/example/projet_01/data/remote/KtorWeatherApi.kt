@@ -12,7 +12,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -35,7 +34,7 @@ suspend fun main() {
 
 object KtorWeatherApi {
     private const val API_URL_BASE =
-        "https://api.openweathermap.org/data/2.5/find?q=";
+        "https://api.openweathermap.org/data/2.5/find?q="
 
     private const val API_URL_PARAMS =
         "&appid=b80967f0a6bd10d23e44848547b26550&units=metric&lang=fr"
@@ -59,7 +58,10 @@ object KtorWeatherApi {
     }
 
     suspend fun loadWeathers(city:String): List<WeatherEntity> {
-        delay(2000)
+        if(city.length < 3 ){
+            throw Exception("Veuillez renseigner une ville")
+        }
+        //delay(2000)
         val response = client.get(API_URL_BASE + city + API_URL_PARAMS){
         }
         if (!response.status.isSuccess()) {
@@ -67,7 +69,7 @@ object KtorWeatherApi {
         }
 
         //onEach est un forEach qui retourne la collection, alors que forEach ne retourne rien
-        return response.body<WeatherInMyCity>().list.onEach { it -> it.weather.forEach { it -> it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png" } }
+        return response.body<WeatherInMyCity>().list.onEach { it  -> it.weather.forEach { it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png" } }
     }
 
 
