@@ -12,6 +12,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -58,6 +59,7 @@ object KtorWeatherApi {
     }
 
     suspend fun loadWeathers(city:String): List<WeatherEntity> {
+        delay(2000)
         val response = client.get(API_URL_BASE + city + API_URL_PARAMS){
         }
         if (!response.status.isSuccess()) {
