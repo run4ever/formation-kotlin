@@ -12,11 +12,17 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 suspend fun main() {
-    val city = "Lens"
+    val city = "Paris"
     val weathers : List<WeatherEntity> = KtorWeatherApi.loadWeathers(city)
 
     println("Stations Météo de $city : ")
@@ -27,6 +33,14 @@ suspend fun main() {
             Nom : ${station.name}
             Resume : ${station.getResume()}
         """.trimIndent())
+    }
+
+    KtorWeatherApi.loadWeathersWithFlow(city, "Lens")
+        .filter { it.wind.speed < 9 }
+        .map { "Météo à " + it.name + " - station " + it.id + ": " + it.main.temp + "°C avec un vent de " + it.wind.speed + " m/s" }
+        .catch { println("ca a planté") }
+        .collect{
+        println(it)
     }
 
     KtorWeatherApi.close()
@@ -73,8 +87,14 @@ object KtorWeatherApi {
     }
 
 
-    fun close() = client.close()
+    fun loadWeathersWithFlow(vararg cities:String): Flow<WeatherEntity> = flow {
+        cities.forEach { cityName ->
+            loadWeathers(cityName).forEach { emit(it) }
+            delay(1000)
+        }
+    }
 
+    fun close() = client.close()
 }
 
 
