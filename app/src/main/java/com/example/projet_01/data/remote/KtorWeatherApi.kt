@@ -64,7 +64,8 @@ object KtorWeatherApi {
             throw Exception("Erreur API: ${response.status} - ${response.bodyAsText()}")
         }
 
-        return response.body<WeatherInMyCity>().list
+        //onEach est un forEach qui retourne la collection, alors que forEach ne retourne rien
+        return response.body<WeatherInMyCity>().list.onEach { it -> it.weather.forEach { it -> it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png" } }
     }
 
 
@@ -101,7 +102,7 @@ data class Weather(
     val id: Int,
     val main: String,
     val description: String,
-    val icon: String,
+    var icon: String,
 )
 
 @Serializable
