@@ -31,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,14 +55,14 @@ import com.example.projet_01.presentation.viewmodel.MainViewModel
 @Composable
 fun SearchScreen(modifier: Modifier = Modifier, model: MainViewModel = MainViewModel()) {
     val myList = model.dataList.collectAsStateWithLifecycle().value
-    val searchText: MutableState<String> = remember { mutableStateOf("") }
-    val myFilteredList = myList.filter { it.name.contains(searchText.value, ignoreCase = true) }
+    var searchText by remember { mutableStateOf("") }
+    val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
     Column(modifier = modifier) {
         modifier.background(Color.LightGray)
         Text(text = "Mon application Météo", fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         // LazyColumn : chargement infini sur demande en remplacement du précédent for each qui affiche tous les éléments tout de suite
-        SearchBar(modifier, searchText)
+        SearchBar(searchText = searchText, onValueChange = {searchText = it})
         LazyColumn(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -78,7 +77,7 @@ fun SearchScreen(modifier: Modifier = Modifier, model: MainViewModel = MainViewM
         ){
 
         Button(
-            onClick = { searchText.value = "" },
+            onClick = { searchText = "" },
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding
         ) {
             Icon(
@@ -171,12 +170,13 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    searchText: MutableState<String> = remember { mutableStateOf("") }
+    searchText: String,
+    onValueChange: (String) -> Unit,
 ) {
 
     TextField(
-        value = searchText.value, //Valeur affichée
-        onValueChange = {searchText.value = it }, //Nouveau texte entré
+        value = searchText, //Valeur affichée
+        onValueChange = onValueChange, //Nouveau texte entré
         leadingIcon = { //Image d'icône
             Icon(
                 imageVector = Icons.Default.Search,
@@ -191,8 +191,8 @@ fun SearchBar(
             //Text(stringResource(R.string.placeholder_search))
         },
         trailingIcon = {
-            if (searchText.value.isNotEmpty()) {
-                IconButton(onClick = { searchText.value = "" }) {
+            if (searchText.isNotEmpty()) {
+                IconButton(onClick = { onValueChange("") }) {
                     Icon(Icons.Default.Clear, contentDescription = "Effacer")
                 }
             }
