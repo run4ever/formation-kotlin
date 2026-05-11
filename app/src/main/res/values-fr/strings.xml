@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Projet_01</string>
+    <string name="search_placeholder">Ville, code postal...</string>
+    <string name="btn_clear_filter">Ré-initialiser</string>
+    <string name="btn_load_data">Charger</string>
+</resources>
