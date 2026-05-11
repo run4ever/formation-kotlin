@@ -3,7 +3,6 @@ package com.example.projet_01.presentation.ui.screens
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -150,7 +149,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
+                    interactionSource = null,
                     indication = null
                 ) { fullDisplay = !fullDisplay }
         ) {
