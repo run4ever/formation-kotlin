@@ -115,7 +115,7 @@ data class WeatherEntity(
     val main: TempEntity,
 ){
     fun getResume():String = """
-        Il fait ${main.temp}°C à ${name} (id=${id}) avec un vent de ${wind.speed} m/s
+        Il fait ${main.temp}°C avec un vent de ${wind.speed} m/s
         - Description : ${weather.firstOrNull()?.description}
         - Icone : ${weather.firstOrNull()?.icon}
         """.trimIndent()
