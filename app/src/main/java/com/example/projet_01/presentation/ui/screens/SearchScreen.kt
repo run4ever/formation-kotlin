@@ -1,6 +1,8 @@
 package com.example.projet_01.presentation.ui.screens
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,11 +25,17 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,19 +55,21 @@ import com.example.projet_01.presentation.viewmodel.MainViewModel
 
 @Composable
 fun SearchScreen(modifier: Modifier = Modifier, model: MainViewModel = MainViewModel()) {
+    val myList = model.dataList.collectAsStateWithLifecycle().value
+    val searchText: MutableState<String> = remember { mutableStateOf("") }
+    val myFilteredList = myList.filter { it.name.contains(searchText.value, ignoreCase = true) }
     Column(modifier = modifier) {
         modifier.background(Color.LightGray)
         Text(text = "Mon application Météo", fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         // LazyColumn : chargement infini sur demande en remplacement du précédent for each qui affiche tous les éléments tout de suite
-        val myList = model.dataList.collectAsStateWithLifecycle().value
-        SearchBar(modifier)
+        SearchBar(modifier, searchText)
         LazyColumn(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(myList.size) {
-                PictureRowItem(data = myList[it])
+            items(myFilteredList.size) {
+                PictureRowItem(data = myFilteredList[it])
             }
         }
         Row(
@@ -68,7 +78,7 @@ fun SearchScreen(modifier: Modifier = Modifier, model: MainViewModel = MainViewM
         ){
 
         Button(
-            onClick = { /* Do something! */ },
+            onClick = { searchText.value = "" },
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding
         ) {
             Icon(
@@ -113,6 +123,7 @@ fun SearchScreenPreview() {
 
 @Composable
 fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
+    var fullDisplay by remember { mutableStateOf(false) }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -137,6 +148,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
                 .padding(8.dp)
                 .fillMaxHeight()
                 .fillMaxWidth()
+                .clickable{fullDisplay = !fullDisplay}
         ) {
             Text(
                 text = data.name.uppercase(),
@@ -144,19 +156,24 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
                 fontSize = 20.sp
             )
             Text(
-                text = data.getResume().take(15) + "...",
+                text = if(fullDisplay) data.getResume() else data.getResume().take(15) + "...",
+                modifier.animateContentSize(),
                 color = MaterialTheme.colorScheme.secondary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
         }
     }
 }
 
 @Composable
-fun SearchBar(modifier: Modifier = Modifier) {
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    searchText: MutableState<String> = remember { mutableStateOf("") }
+) {
+
     TextField(
-        value = "", //Valeur affichée
-        onValueChange = {newValue:String -> }, //Nouveau texte entré
+        value = searchText.value, //Valeur affichée
+        onValueChange = {searchText.value = it }, //Nouveau texte entré
         leadingIcon = { //Image d'icône
             Icon(
                 imageVector = Icons.Default.Search,
@@ -167,9 +184,17 @@ fun SearchBar(modifier: Modifier = Modifier) {
         singleLine = true,
         label = { //Texte d'aide qui se déplace
             Text(stringResource(R.string.search_placeholder))
-            //Pour aller le chercher dans string.xml, R de votre package com.nom.projet
+            //Pour aller le chercher dans strings.xml, R de votre package com.nom.projet
             //Text(stringResource(R.string.placeholder_search))
         },
+        trailingIcon = {
+            if (searchText.value.isNotEmpty()) {
+                IconButton(onClick = { searchText.value = "" }) {
+                    Icon(Icons.Default.Clear, contentDescription = "Effacer")
+                }
+            }
+        },
+
         //placeholder = { //Texte d'aide qui disparait
         //Text("Recherche")
         //},
