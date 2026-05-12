@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
@@ -42,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,7 +70,11 @@ fun SearchScreen(
         Text(text = "Mon application Météo", fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         // LazyColumn : chargement infini sur demande en remplacement du précédent for each qui affiche tous les éléments tout de suite
-        SearchBar(searchText = searchText, onValueChange = {model.updateSearchText(it)})
+        SearchBar(
+            searchText = searchText,
+            onValueChange = { model.updateSearchText(it) },
+            onSearchAction = { model.loadWeathers(searchText) }
+        )
         LazyColumn(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -180,6 +187,7 @@ fun SearchBar(
     modifier: Modifier = Modifier,
     searchText: String,
     onValueChange: (String) -> Unit,
+    onSearchAction: () -> Unit = {},
 ) {
 
     TextField(
@@ -195,8 +203,6 @@ fun SearchBar(
         singleLine = true,
         label = { //Texte d'aide qui se déplace
             Text(stringResource(R.string.search_placeholder))
-            //Pour aller le chercher dans strings.xml, R de votre package com.nom.projet
-            //Text(stringResource(R.string.placeholder_search))
         },
         trailingIcon = {
             if (searchText.isNotEmpty()) {
@@ -205,14 +211,8 @@ fun SearchBar(
                 }
             }
         },
-
-        //placeholder = { //Texte d'aide qui disparait
-        //Text("Recherche")
-        //},
-
-        //keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), // Définir le bouton "Entrée" comme action de recherche
-        //keyboardActions = KeyboardActions(onSearch = {onSearchAction()}), // Déclenche l'action définie
-        //Comment le composant doit se placer
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSearchAction() }),
         modifier = modifier
             .fillMaxWidth() // Prend toute la largeur
             .heightIn(min = 56.dp) //Hauteur minimum
