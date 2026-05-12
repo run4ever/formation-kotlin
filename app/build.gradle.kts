@@ -76,4 +76,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    //Pour la demande de permission
+    implementation ("com.google.accompanist:accompanist-permissions:+")
+    //Pour la demande de localisation
+    implementation ("com.google.android.gms:play-services-location:+")
+
 }

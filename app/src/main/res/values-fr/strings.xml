@@ -2,7 +2,9 @@
 <resources>
     <string name="app_name">Projet_01</string>
     <string name="search_placeholder">Ville, code postal…</string>
-    <string name="btn_clear_filter">Ré-initialiser</string>
+    <string name="btn_clear_filter">Effacer</string>
     <string name="btn_load_data">Charger</string>
     <string name="btn_detail_back">Retour</string>
+    <string name="btn_geoloc">Ici</string>
+    <string name="error_location_denied">Permission de localisation nécessaire</string>
 </resources>

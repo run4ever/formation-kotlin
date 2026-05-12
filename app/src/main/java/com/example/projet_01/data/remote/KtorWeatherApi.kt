@@ -43,12 +43,16 @@ suspend fun main() {
         println(it)
     }
 
+    println("Météo avec lat & lon ......")
+    KtorWeatherApi.loadWeatherAround(43.568708, 1.489464).forEach { println(it) }
+
+
     KtorWeatherApi.close()
 }
 
 object KtorWeatherApi {
     private const val API_URL_BASE =
-        "https://api.openweathermap.org/data/2.5/find?q="
+        "https://api.openweathermap.org/data/2.5/find?"
 
     private const val API_URL_PARAMS =
         "&appid=b80967f0a6bd10d23e44848547b26550&units=metric&lang=fr"
@@ -75,15 +79,7 @@ object KtorWeatherApi {
         if(city.length < 3 ){
             throw Exception("Veuillez renseigner une ville")
         }
-        //delay(2000)
-        val response = client.get(API_URL_BASE + city + API_URL_PARAMS){
-        }
-        if (!response.status.isSuccess()) {
-            throw Exception("Erreur API: ${response.status} - ${response.bodyAsText()}")
-        }
-
-        //onEach est un forEach qui retourne la collection, alors que forEach ne retourne rien
-        return response.body<WeatherInMyCity>().list.onEach { it  -> it.weather.forEach { it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png" } }
+        return loadWeatherByUrl(API_URL_BASE + "q=" + city + API_URL_PARAMS)
     }
 
 
@@ -92,6 +88,21 @@ object KtorWeatherApi {
             loadWeathers(cityName).forEach { emit(it) }
             delay(1000)
         }
+    }
+
+    suspend fun loadWeatherAround(lat: Double, lon: Double): List<WeatherEntity> {
+        return loadWeatherByUrl(API_URL_BASE + "lat=" + lat + "&lon=" + lon + API_URL_PARAMS)
+    }
+
+    suspend fun loadWeatherByUrl(url: String): List<WeatherEntity> {
+        val response = client.get(url){
+        }
+        if (!response.status.isSuccess()) {
+            throw Exception("Erreur API: ${response.status} - ${response.bodyAsText()}")
+        }
+
+        //onEach est un forEach qui retourne la collection, alors que forEach ne retourne rien
+        return response.body<WeatherInMyCity>().list.onEach { it  -> it.weather.forEach { it.icon = "https://openweathermap.org/img/wn/${it.icon}@4x.png" } }
     }
 
     fun close() = client.close()

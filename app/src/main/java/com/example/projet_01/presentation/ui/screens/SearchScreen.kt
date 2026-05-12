@@ -1,5 +1,6 @@
 package com.example.projet_01.presentation.ui.screens
 
+import android.location.Location
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +62,10 @@ import com.example.projet_01.data.remote.WeatherEntity
 import com.example.projet_01.presentation.ui.MyError
 import com.example.projet_01.presentation.ui.theme.Projet_01Theme
 import com.example.projet_01.presentation.viewmodel.MainViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
@@ -70,6 +76,23 @@ fun SearchScreen(
     val myList = model.dataList.collectAsStateWithLifecycle().value
     val searchText = model.searchText.collectAsStateWithLifecycle().value
     val runInProgress = model.runInProgress.collectAsStateWithLifecycle().value
+
+    var myLocation by remember { mutableStateOf<Location?>(null) }
+    //Pour obtenir le context de l'application
+    val context  = LocalContext.current
+    val errorLocationDenied = stringResource(R.string.error_location_denied)
+
+    val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION,
+        //Callback de la demande de permission
+        onPermissionResult = {
+            if (it) { //L'application a la permission
+                //Si on a la permission on récupère la localisation
+                //Attention c'est un callback donc asynchrone
+                model.loadWeatherAround(context)
+            } else {
+                model.updateErrorMessage(errorLocationDenied)
+            }
+        })
 
     Column(modifier = modifier.background(Color.LightGray)) {
 
@@ -103,6 +126,21 @@ fun SearchScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ){
 
+        Button(
+            onClick = {
+                //Affiche la popup de demande de permission
+                locationPermissionState.launchPermissionRequest()
+            },
+            contentPadding = ButtonDefaults.ButtonWithIconContentPadding
+        ) {
+            Icon(
+                Icons.Filled.GpsFixed,
+                contentDescription = "Here",
+                modifier = Modifier.size(ButtonDefaults.IconSize)
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(stringResource(R.string.btn_geoloc))
+        }
         Button(
             onClick = { model.updateSearchText("") },
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding

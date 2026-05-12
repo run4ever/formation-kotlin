@@ -1,7 +1,9 @@
 package com.example.projet_01.presentation.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projet_01.data.datasources.LocationDataSource
 import com.example.projet_01.data.remote.KtorWeatherApi
 import com.example.projet_01.data.remote.TempEntity
 import com.example.projet_01.data.remote.Weather
@@ -51,7 +53,8 @@ class MainViewModel : ViewModel() {
     private val _runInProgress = MutableStateFlow(false)
     val runInProgress = _runInProgress.asStateFlow()
 
-    val errorMessage = MutableStateFlow("")
+    private val _errorMessage = MutableStateFlow("")
+    val errorMessage = _errorMessage.asStateFlow()
 
     init {
         loadWeathers("nantes")
@@ -59,7 +62,7 @@ class MainViewModel : ViewModel() {
 
     fun loadFakeData(runInProgress :Boolean = false, errorMessage:String = "" ) {
         updateRunInProgress(runInProgress)
-        this.errorMessage.value = errorMessage
+        updateErrorMessage(errorMessage)
         dataList.value = listOf(
             WeatherEntity(
                 id = 1,
@@ -108,9 +111,13 @@ class MainViewModel : ViewModel() {
         _runInProgress.value = newValue
     }
 
+    fun updateErrorMessage(newValue:String) {
+        _errorMessage.value = newValue
+    }
+
     fun loadWeathers(cityName:String){
         updateRunInProgress(true)
-        errorMessage.value = ""
+        updateErrorMessage("")
         // viewModelScope.launch : on liste les actions à lancer mais qui ne doivent pas être bloquantes
         viewModelScope.launch(Dispatchers.IO){
             //Dispatchers.IO = thread secondaire
@@ -118,12 +125,50 @@ class MainViewModel : ViewModel() {
                 dataList.value = KtorWeatherApi.loadWeathers(cityName)
             } catch (e: Exception) {
                 e.printStackTrace()
-                errorMessage.value = e.message ?: "An error occurred"
+                updateErrorMessage(e.message ?: "An error occurred")
             } finally {
                 //intéret du finally : s'execute meme si on met un return dans le try
                 updateRunInProgress(false)
             }
 
+        }
+    }
+
+    fun loadWeatherAround(context: Context) {
+        updateRunInProgress(true)
+        updateErrorMessage("")
+
+        val task = LocationDataSource.getLastKnownLocationEconomyMode(context)
+
+        if (task == null) {
+            updateErrorMessage("Permission de localisation manquante")
+            updateRunInProgress(false)
+            return
+        }
+
+        task.addOnSuccessListener { location ->
+            if (location == null) {
+                updateErrorMessage("Localisation indisponible")
+                updateRunInProgress(false)
+            }
+            else {
+                val lat = location.latitude
+                val lon = location.longitude
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        dataList.value = KtorWeatherApi.loadWeatherAround(lat, lon)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        updateErrorMessage(e.message ?: "An error occurred")
+                    } finally {
+                        updateRunInProgress(false)
+                    }
+                }
+            }
+        }.addOnFailureListener { e ->
+            updateErrorMessage(e.message ?: "Erreur de localisation")
+            updateRunInProgress(false)
         }
     }
 }

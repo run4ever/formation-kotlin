@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Projet_01</string>
     <string name="search_placeholder">City, zip code</string>
-    <string name="btn_clear_filter">Clear filter</string>
-    <string name="btn_load_data">Load data</string>
+    <string name="btn_clear_filter">Clear</string>
+    <string name="btn_load_data">Load</string>
     <string name="btn_detail_back">Back</string>
+    <string name="btn_geoloc">Here</string>
+    <string name="error_location_denied">Please allow localization</string>
 </resources>
