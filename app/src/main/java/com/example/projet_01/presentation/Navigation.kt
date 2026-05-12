@@ -15,7 +15,7 @@ import com.example.projet_01.presentation.viewmodel.MainViewModel
 import kotlinx.serialization.Serializable
 
 class Routes {
-    @kotlinx.serialization.Serializable
+    @Serializable
     data object SearchRoute
 
     //les paramètres ne peuvent être que des types de base(String, Int, Double...)
@@ -42,9 +42,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             //Si créé ici, il sera propre à cet instance de l'écran
             //val mainViewModel : MainViewModel = viewModel()
 
-            //on peut passer le navHostController à un écran s'il déclenche des navigations
             SearchScreen(
-                //navHostController = navHostController,
                 model = mainViewModel,
                 onPictureClick = {
                     navHostController.navigate(Routes.DetailRoute(it.id))
@@ -60,7 +58,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             DetailScreen(
                 data = weatherEntity,
                 onBackButtonClick = { navHostController.popBackStack() },
-                //model = mainViewModel
             )
         }
     }
