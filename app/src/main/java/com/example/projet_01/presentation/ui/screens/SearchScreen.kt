@@ -1,9 +1,11 @@
 package com.example.projet_01.presentation.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -69,6 +72,7 @@ fun SearchScreen(
 
     val myList = model.dataList.collectAsStateWithLifecycle().value
     var searchText = model.searchText.collectAsStateWithLifecycle().value
+    val runInProgress = model.runInProgress.collectAsStateWithLifecycle().value
 
     //val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
     Column(modifier = modifier) {
@@ -81,6 +85,14 @@ fun SearchScreen(
             onValueChange = { model.updateSearchText(it) },
             onSearchAction = { model.loadWeathers(searchText) }
         )
+        AnimatedVisibility(visible = runInProgress) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
         LazyColumn(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
