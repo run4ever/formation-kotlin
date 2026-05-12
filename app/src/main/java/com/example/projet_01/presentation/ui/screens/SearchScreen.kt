@@ -36,7 +36,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,15 +63,12 @@ import com.example.projet_01.presentation.viewmodel.MainViewModel
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    model: MainViewModel = viewModel()
+    model: MainViewModel = viewModel(),
+    onPictureClick: (WeatherEntity) -> Unit
 ) {
-    //launchedEffect permet de faire qqchose au démarrage sans que cela se répète à chaque recomposition
-    LaunchedEffect("") {
-        model.loadWeathers("nantes")
-    }
 
     val myList = model.dataList.collectAsStateWithLifecycle().value
-    var searchText = model.searchText.collectAsStateWithLifecycle().value
+    val searchText = model.searchText.collectAsStateWithLifecycle().value
     val runInProgress = model.runInProgress.collectAsStateWithLifecycle().value
 
     Column(modifier = modifier.background(Color.LightGray)) {
@@ -99,7 +95,7 @@ fun SearchScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(myList.size) {
-                PictureRowItem(data = myList[it])
+                PictureRowItem(data = myList[it], onPictureClick = onPictureClick)
             }
         }
         Row(
@@ -108,7 +104,7 @@ fun SearchScreen(
         ){
 
         Button(
-            onClick = { searchText = "" },
+            onClick = { model.updateSearchText("") },
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding
         ) {
             Icon(
@@ -147,17 +143,22 @@ fun SearchScreenPreview() {
     Projet_01Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             val modelForFakeData: MainViewModel = viewModel()
-            modelForFakeData.loadFakeData(false, "dfsdf")
+            modelForFakeData.loadFakeData(false, "error 404")
             SearchScreen(
                 modifier = Modifier.padding(innerPadding),
-                model = modelForFakeData
+                model = modelForFakeData,
+                onPictureClick = {}
             )
         }
     }
 }
 
 @Composable
-fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
+fun PictureRowItem(
+    modifier: Modifier = Modifier,
+    data: WeatherEntity,
+    onPictureClick: (WeatherEntity) -> Unit
+) {
     var fullDisplay by remember { mutableStateOf(false) }
     Row(
         modifier = modifier
@@ -178,6 +179,7 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
             modifier = Modifier
                 .heightIn(max = 100.dp)
                 .widthIn(max = 100.dp)
+                .clickable{ onPictureClick(data) }
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(

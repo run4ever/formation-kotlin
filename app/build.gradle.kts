@@ -73,4 +73,7 @@ dependencies {
     //pour eviter de recrer un viewModel à chaque recompositions
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
+    implementation("androidx.navigation:navigation-compose:2.9.+")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.+")
+
 }

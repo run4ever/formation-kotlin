@@ -3,4 +3,5 @@
     <string name="search_placeholder">City, zip code</string>
     <string name="btn_clear_filter">Clear filter</string>
     <string name="btn_load_data">Load data</string>
+    <string name="btn_detail_back">Back</string>
 </resources>
