@@ -57,23 +57,23 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     //Client requête
-    implementation("io.ktor:ktor-client-okhttp:3.4.2")
+    implementation(libs.ktor.client.okhttp)
     //Intégration avec la bibliothèque de serialisation, gestion des headers
-    implementation("io.ktor:ktor-client-content-negotiation:3.4.2")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.2") //Serialisation JSON
-    implementation ("io.ktor:ktor-client-logging-jvm:3.4.2")  //log
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json) //Serialisation JSON
+    implementation (libs.ktor.client.logging.jvm)  //log
 
     //Coil ImageLoader
-    implementation("io.coil-kt.coil3:coil-network-ktor3:3.2.0")
-    implementation("io.coil-kt.coil3:coil-compose:3.2.0")
+    implementation(libs.coil.network.ktor3)
+    implementation(libs.coil.compose)
 
     //icones material 3
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.compose.material.icons.extended)
 
-    //pour eviter de recrer un viewModel à chaque recompositions
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    //pour eviter de recréer un viewModel à chaque recompositions
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation("androidx.navigation:navigation-compose:2.9.+")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.+")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 
 }
