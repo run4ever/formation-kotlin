@@ -10,6 +10,7 @@ import com.example.projet_01.data.remote.WindEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 suspend fun main(){
@@ -25,7 +26,7 @@ suspend fun main(){
     }
 
     println("""
-        List : ${viewModel.dataList.value} 
+        List : ${viewModel.dataList.value}
         Erreur : ${viewModel.errorMessage.value}
         """.trimIndent()
     )
@@ -44,7 +45,8 @@ class MainViewModel : ViewModel() {
     //MutableStateFlow est une donnée observable
     val dataList = MutableStateFlow(emptyList<WeatherEntity>())
 
-    val searchText = MutableStateFlow("")
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
 
     val runInProgress = MutableStateFlow(false)
     val errorMessage = MutableStateFlow("")
@@ -94,7 +96,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun updateSearchText(newValue:String) {
-        searchText.value = newValue
+        _searchText.value = newValue
     }
 
     fun loadWeathers(cityName:String){
