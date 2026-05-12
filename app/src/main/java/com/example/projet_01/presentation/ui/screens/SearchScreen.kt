@@ -64,7 +64,7 @@ import com.example.projet_01.presentation.viewmodel.MainViewModel
 fun SearchScreen(
     modifier: Modifier = Modifier,
     model: MainViewModel = viewModel(),
-    onPictureClick: (WeatherEntity) -> Unit
+    onPictureClick: (Int) -> Unit
 ) {
 
     val myList = model.dataList.collectAsStateWithLifecycle().value
@@ -157,7 +157,7 @@ fun SearchScreenPreview() {
 fun PictureRowItem(
     modifier: Modifier = Modifier,
     data: WeatherEntity,
-    onPictureClick: (WeatherEntity) -> Unit
+    onPictureClick: (Int) -> Unit
 ) {
     var fullDisplay by remember { mutableStateOf(false) }
     Row(
@@ -179,7 +179,7 @@ fun PictureRowItem(
             modifier = Modifier
                 .heightIn(max = 100.dp)
                 .widthIn(max = 100.dp)
-                .clickable{ onPictureClick(data) }
+                .clickable{ onPictureClick(data.id) }
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(

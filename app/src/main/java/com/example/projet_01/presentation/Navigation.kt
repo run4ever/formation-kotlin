@@ -45,7 +45,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             SearchScreen(
                 model = mainViewModel,
                 onPictureClick = {
-                    navHostController.navigate(Routes.DetailRoute(it.id))
+                    navHostController.navigate(Routes.DetailRoute(it))
                 }
             )
         }
