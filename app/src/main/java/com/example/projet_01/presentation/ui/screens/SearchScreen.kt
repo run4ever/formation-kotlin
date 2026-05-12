@@ -127,7 +127,12 @@ fun SearchScreen(
 fun SearchScreenPreview() {
     Projet_01Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            SearchScreen(modifier = Modifier.padding(innerPadding))
+            val modelForFakeData: MainViewModel = viewModel()
+            modelForFakeData.loadFakeData()
+            SearchScreen(
+                modifier = Modifier.padding(innerPadding),
+                model = modelForFakeData
+            )
         }
     }
 }
