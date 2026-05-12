@@ -59,14 +59,15 @@ fun SearchScreen(
     model: MainViewModel = viewModel()
 ) {
     val myList = model.dataList.collectAsStateWithLifecycle().value
-    var searchText by remember { mutableStateOf("") }
+    var searchText = model.searchText.collectAsStateWithLifecycle().value
+
     //val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
     Column(modifier = modifier) {
         modifier.background(Color.LightGray)
         Text(text = "Mon application Météo", fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         // LazyColumn : chargement infini sur demande en remplacement du précédent for each qui affiche tous les éléments tout de suite
-        SearchBar(searchText = searchText, onValueChange = {searchText = it})
+        SearchBar(searchText = searchText, onValueChange = {model.updateSearchText(it)})
         LazyColumn(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)

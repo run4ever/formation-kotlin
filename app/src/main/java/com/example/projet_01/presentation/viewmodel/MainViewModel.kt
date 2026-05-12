@@ -43,6 +43,9 @@ suspend fun main(){
 class MainViewModel : ViewModel() {
     //MutableStateFlow est une donnée observable
     val dataList = MutableStateFlow(emptyList<WeatherEntity>())
+
+    val searchText = MutableStateFlow("")
+
     val runInProgress = MutableStateFlow(false)
     val errorMessage = MutableStateFlow("")
 
@@ -88,6 +91,10 @@ class MainViewModel : ViewModel() {
                 wind = WindEntity(speed = 4.5)
             )
         ).shuffled() //shuffled() pour avoir un ordre différent à chaque appel
+    }
+
+    fun updateSearchText(newValue:String) {
+        searchText.value = newValue
     }
 
     fun loadWeathers(cityName:String){
