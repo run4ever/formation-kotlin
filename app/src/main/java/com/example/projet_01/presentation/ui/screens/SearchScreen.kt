@@ -60,7 +60,7 @@ fun SearchScreen(
 ) {
     val myList = model.dataList.collectAsStateWithLifecycle().value
     var searchText by remember { mutableStateOf("") }
-    val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
+    //val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
     Column(modifier = modifier) {
         modifier.background(Color.LightGray)
         Text(text = "Mon application Météo", fontSize = 20.sp)
@@ -71,8 +71,8 @@ fun SearchScreen(
             modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(myFilteredList.size) {
-                PictureRowItem(data = myFilteredList[it])
+            items(myList.size) {
+                PictureRowItem(data = myList[it])
             }
         }
         Row(
@@ -93,7 +93,7 @@ fun SearchScreen(
             Text(stringResource(R.string.btn_clear_filter))
         }
         Button(
-            onClick = { /* Do something! */ },
+            onClick = { model.loadWeathers(searchText) },
             contentPadding = ButtonDefaults.ButtonWithIconContentPadding
         ) {
             Icon(
@@ -140,6 +140,9 @@ fun PictureRowItem(modifier: Modifier = Modifier, data: WeatherEntity) {
             contentScale = ContentScale.FillWidth,
             error = painterResource(R.drawable.error),
             placeholder = painterResource(R.drawable.loading),
+            onError = {
+                println(it)
+            },
             modifier = Modifier
                 .heightIn(max = 100.dp)
                 .widthIn(max = 100.dp)
