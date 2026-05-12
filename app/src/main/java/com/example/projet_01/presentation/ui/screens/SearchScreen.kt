@@ -57,6 +57,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.projet_01.R
 import com.example.projet_01.data.remote.WeatherEntity
+import com.example.projet_01.presentation.ui.MyError
 import com.example.projet_01.presentation.ui.theme.Projet_01Theme
 import com.example.projet_01.presentation.viewmodel.MainViewModel
 
@@ -74,9 +75,8 @@ fun SearchScreen(
     var searchText = model.searchText.collectAsStateWithLifecycle().value
     val runInProgress = model.runInProgress.collectAsStateWithLifecycle().value
 
-    //val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }
-    Column(modifier = modifier) {
-        modifier.background(Color.LightGray)
+    Column(modifier = modifier.background(Color.LightGray)) {
+
         Text(text = "Mon application Météo", fontSize = 20.sp)
         Spacer(Modifier.size(8.dp))
         // LazyColumn : chargement infini sur demande en remplacement du précédent for each qui affiche tous les éléments tout de suite
@@ -93,8 +93,9 @@ fun SearchScreen(
                 CircularProgressIndicator()
             }
         }
+        MyError(errorMessage =  model.errorMessage.collectAsStateWithLifecycle().value)
         LazyColumn(
-            modifier.weight(1f),
+            Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(myList.size) {
@@ -102,7 +103,7 @@ fun SearchScreen(
             }
         }
         Row(
-            modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ){
 
@@ -146,7 +147,7 @@ fun SearchScreenPreview() {
     Projet_01Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             val modelForFakeData: MainViewModel = viewModel()
-            modelForFakeData.loadFakeData()
+            modelForFakeData.loadFakeData(false, "dfsdf")
             SearchScreen(
                 modifier = Modifier.padding(innerPadding),
                 model = modelForFakeData

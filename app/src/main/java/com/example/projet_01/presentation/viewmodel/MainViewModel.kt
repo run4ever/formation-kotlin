@@ -48,12 +48,14 @@ class MainViewModel : ViewModel() {
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
-    val runInProgress = MutableStateFlow(false)
+    private val _runInProgress = MutableStateFlow(false)
+    val runInProgress = _runInProgress.asStateFlow()
+
     val errorMessage = MutableStateFlow("")
 
 
     fun loadFakeData(runInProgress :Boolean = false, errorMessage:String = "" ) {
-        this.runInProgress.value = runInProgress
+        updateRunInProgress(runInProgress)
         this.errorMessage.value = errorMessage
         dataList.value = listOf(
             WeatherEntity(
@@ -99,13 +101,13 @@ class MainViewModel : ViewModel() {
         _searchText.value = newValue
     }
 
+    fun updateRunInProgress(newValue: Boolean) {
+        _runInProgress.value = newValue
+    }
+
     fun loadWeathers(cityName:String){
-        // au choix : ici ou dans KtorWeatherApi.loadWeathers
-        //if(cityName.length < 3 ){
-        //    throw Exception("Veuillez renseigner une ville")
-        //}
-        runInProgress.value = true
-        //récupérer des données et les mettre dans dataList
+        updateRunInProgress(true)
+        errorMessage.value = ""
         // viewModelScope.launch : on liste les actions à lancer mais qui ne doivent pas être bloquantes
         viewModelScope.launch(Dispatchers.IO){
             //Dispatchers.IO = thread secondaire
@@ -116,7 +118,7 @@ class MainViewModel : ViewModel() {
                 errorMessage.value = e.message ?: "An error occurred"
             } finally {
                 //intéret du finally : s'execute meme si on met un return dans le try
-                runInProgress.value = false
+                updateRunInProgress(false)
             }
 
         }
