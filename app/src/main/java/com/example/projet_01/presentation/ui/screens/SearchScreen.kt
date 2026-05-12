@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.projet_01.R
 import com.example.projet_01.data.remote.WeatherEntity
@@ -53,7 +54,10 @@ import com.example.projet_01.presentation.ui.theme.Projet_01Theme
 import com.example.projet_01.presentation.viewmodel.MainViewModel
 
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier, model: MainViewModel = MainViewModel()) {
+fun SearchScreen(
+    modifier: Modifier = Modifier,
+    model: MainViewModel = viewModel()
+) {
     val myList = model.dataList.collectAsStateWithLifecycle().value
     var searchText by remember { mutableStateOf("") }
     val myFilteredList = myList.filter { it.name.contains(searchText, ignoreCase = true) }

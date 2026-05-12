@@ -70,4 +70,7 @@ dependencies {
     //icones material 3
     implementation("androidx.compose.material:material-icons-extended")
 
+    //pour eviter de recrer un viewModel à chaque recompositions
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+
 }
