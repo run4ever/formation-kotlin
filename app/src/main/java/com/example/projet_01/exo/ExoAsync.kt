@@ -4,6 +4,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.TimeoutException
 import kotlin.random.Random.Default.nextInt
 
 class ResultEntity {
@@ -13,22 +14,33 @@ class ResultEntity {
 }
 
 fun electionResultInDept(deptNumber: Int): ResultEntity {
+    if (nextInt(10) == 1) {
+        println("Erreur  : $deptNumber")
+        throw TimeoutException("404 sur le département $deptNumber")
+    }
     println("Le département : $deptNumber a répondu")
     return ResultEntity()
 }
 
 fun electionResult() {
     val start = System.currentTimeMillis()
-    val results = ArrayList<Deferred<ResultEntity>>()
+    val results = ArrayList<Deferred<ResultEntity?>>()
     var gandalf = 0
     var dumbledore = 0
     var merlin = 0
+    var nbReponses = 0
 
     runBlocking {
         repeat(100) {
-            results.add(async { electionResultInDept(it) })
+            results.add(async { try {
+                electionResultInDept(it)
+            } catch (e: Exception) {
+                null
+            }
+            })
         }
-        results.awaitAll().forEach {
+        results.awaitAll().filterNotNull().forEach {
+            nbReponses += 1
             gandalf += it.nbVoteGandalf
             dumbledore += it.nbVoteDumbledore
             merlin += it.nbVoteMerlin
@@ -38,7 +50,7 @@ fun electionResult() {
     val total = (gandalf + dumbledore + merlin).toFloat()
 
     println("""
-        -------- TOTAL
+        -------- TOTAL ( $nbReponses réponses )
         Gandalf : ${"%.2f".format(gandalf * 100 / total)} %
         Dumbledore : ${"%.2f".format(dumbledore * 100 / total)} %
         Merlin : ${"%.2f".format(merlin * 100 / total)} %
