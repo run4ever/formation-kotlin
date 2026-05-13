@@ -1,9 +1,10 @@
 package com.example.projet_01.exo
 
+import kotlinx.serialization.Serializable
 import java.util.Random
-import kotlin.text.iterator
 
 
+@Serializable
 class CarEntity (var marque: String, var modele: String) {
     var couleur = "rouge"
     fun print() = println("C'est une $marque $modele de couleur $couleur")
